@@ -5,7 +5,7 @@
       <InputField
         id="email"
         label="Correo Electrónico"
-        type="email"
+        type="text"
         v-model="email"
         :error="emailError"
         autocomplete="email"
@@ -17,12 +17,12 @@
         label="Contraseña"
         type="password"
         v-model="password"
-        :error="''"
+        :error="passwordError"
         autocomplete="current-password"
         inputmode="password"
       />
-      <Button type="submit">
-        Iniciar Sesión
+      <Button type="submit" :disabled="isLoading">
+        {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
       </Button>
     </form>
   </div>
@@ -30,28 +30,62 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Logo from '@/components/Logo/Logo.vue'
 import InputField from '@/components/InputField/InputField.vue'
 import Button from '@/components/Button/Button.vue'
+import { useAuth } from '@/services/auth'
 
+const router = useRouter()
+const { login } = useAuth()
 const email = ref('')
 const password = ref('')
 const emailError = ref('')
+const passwordError = ref('')
+const isLoading = ref(false)
 
-function validarEmail(email: string) {
-  // Simple regex for email validation
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+function validarEmail(email: string): string {
+  if (!email) {
+    return 'El correo electrónico es requerido'
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return 'Formato de correo electrónico inválido'
+  }
+  return ''
 }
 
-function onSubmit() {
-  emailError.value = ''
-  if (!validarEmail(email.value)) {
-    emailError.value = 'Correo electrónico no válido'
+function validarPassword(password: string): string {
+  if (!password) {
+    return 'La contraseña es requerida'
+  }
+  if (password.length < 6) {
+    return 'La contraseña debe tener al menos 6 caracteres'
+  }
+  return ''
+}
+
+async function onSubmit() {
+  const emailValidation = validarEmail(email.value)
+  if (emailValidation) {
+    emailError.value = emailValidation
     return
   }
-  // TODO: Autenticación real aquí
-  // Por ahora, solo redirigir o mostrar éxito
-  alert('¡Inicio de sesión exitoso!')
+
+  const passwordValidation = validarPassword(password.value)
+  if (passwordValidation) {
+    passwordError.value = passwordValidation
+    return
+  }
+
+  try {
+    isLoading.value = true
+    await login({ email: email.value, password: password.value })
+    router.push('/home')
+  } catch (error) {
+    emailError.value = 'Credenciales inválidas'
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
