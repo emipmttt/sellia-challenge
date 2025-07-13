@@ -1,0 +1,32 @@
+// Variables para modo claro y oscuro
+:root {
+  --color-primary: #2563eb;
+  --color-primary-hover: #1740b5;
+  --color-bg: #fff;
+  --color-card: #fff;
+  --color-label: #444;
+  --color-logo-text: #222;
+  --color-input-border: #ccc;
+  --color-input-bg: #eee;
+  --color-input-bg-focus: #fff;
+  --color-input-bg-error: #fff6f6;
+  --color-input-text: #222;
+  --color-error: #e53935;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-bg: #181a20;
+    --color-card: #23262f;
+    --color-label: #bbb;
+    --color-logo-text: #fff;
+    --color-input-border: #444;
+    --color-input-bg: #23262f;
+    --color-input-bg-focus: #181a20;
+    --color-input-bg-error: #2b1b1b;
+    --color-input-text: #fff;
+    --color-error: #ff6b6b;
+  }
+}
