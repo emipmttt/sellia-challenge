@@ -52,59 +52,60 @@ import ButtonMessage from '@/components/Messages/ButtonMessage.vue' // Import th
 import { ArrowLeftIcon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import './Conversation.scss'
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, type Ref, watchEffect } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import { useConversationsService } from '@/services/conversations'
+import { useConversationsService } from '@/services/conversations' // Keep this for getClientById for now
+import { useConversationsStore } from '@/stores/conversations'
 import type { Message, Conversation, Client } from '@/services/types'
 
 const route = useRoute()
 const $router = useRouter()
 const clientId = route.params.clientId as string
-const { getConversationById, sendMessage: sendMessageToAPI, getClientById } = useConversationsService()
+const { getClientById } = useConversationsService() // Only keep getClientById
 
-const messages = ref<Message[]>([])
+const conversationsStore = useConversationsStore()
+const { conversations, isLoading, error } = storeToRefs(conversationsStore)
+const { fetchConversations, fetchConversationMessages, addMessageToConversation } = conversationsStore
+
+
+const messages = ref<Message[]>([]);
 const client = ref<Client | null>(null)
 const newMessage = ref('')
-const isLoading = ref(false)
+// isLoading from store will be used for overall conversation loading
 
 const handleSendMessage = async (textToSend: string = newMessage.value) => {
-  if (textToSend.trim() && !isLoading.value) {
-    isLoading.value = true
-    try {
-      await sendMessageToAPI(clientId, textToSend)
-      // For now, manually add the new message to the list
-      // In a real app, this would come from a websocket or a refetch
-      messages.value.push({
+  if (textToSend.trim()) {
+    const message = {
+      _id: Date.now().toString(),
+      type: 'Message',
+      client: clientId,
+      message: {
         _id: Date.now().toString(),
-        type: 'Message',
-        client: clientId,
-        message: {
-          _id: Date.now().toString(),
-          type: 'text',
-          text: textToSend,
-          typeUser: 'User',
-          user: clientId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+        type: 'text',
+        text: textToSend,
+        typeUser: 'User',
+        user: clientId,
         createdAt: new Date().toISOString(),
-      })
-      newMessage.value = ''
-    } catch (error) {
-      console.error('Error sending message:', error)
-    } finally {
-      isLoading.value = false
+        updatedAt: new Date().toISOString(),
+      },
+      createdAt: new Date().toISOString(),
     }
+    addMessageToConversation(clientId, message)
+    newMessage.value = ''
   }
 }
 
 const loadConversation = async () => {
   try {
-    const [conversation, clientData] = await Promise.all([
-      getConversationById(clientId),
-      getClientById(clientId)
-    ])
-    messages.value = conversation.messages
+    await fetchConversations() // Fetch conversations using the store
+    await fetchConversationMessages(clientId) // Fetch detailed messages for the current conversation
+    const conversation = conversations.value.find((conv: any) => conv.clientId === clientId)
+    if (conversation) {
+      messages.value = conversation.messages
+    }
+    // Still fetch client data directly for now, as it's not in the conversation store
+    const clientData = await getClientById(clientId)
     client.value = clientData
   } catch (error) {
     console.error('Error loading conversation:', error)
@@ -139,8 +140,14 @@ const getMessageContent = (message: Message) => {
   return '[Mensaje no soportado]';
 }
 
-onMounted(() => {
-  loadConversation()
-})
-</script>
+watchEffect(() => {
+  const conversation = conversations.value.find((conv: any) => conv.clientId === clientId);
+  if (conversation) {
+    messages.value = conversation.messages;
+  }
+});
 
+onMounted(() => {
+  loadConversation();
+});
+</script>

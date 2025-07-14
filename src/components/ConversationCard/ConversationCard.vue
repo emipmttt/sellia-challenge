@@ -42,8 +42,19 @@ const latestMessageDateLabel = computed(() => {
 
 const latestMessagePreview = computed(() => {
   if (!props.previewMessage) return 'Sin mensajes'
-  if (typeof props.previewMessage.message?.text === 'string') return props.previewMessage.message.text
-  return '[Mensaje no soportado]'
+
+  switch (props.previewMessage.message?.type) {
+    case 'text':
+      return props.previewMessage.message.text || '';
+    case 'image':
+      return 'Imagen';
+    case 'video':
+      return 'Video';
+    case 'document':
+      return 'Documento';
+    default:
+      return '[Mensaje no soportado]';
+  }
 })
 </script>
 

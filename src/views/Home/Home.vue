@@ -17,57 +17,45 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useConversationsService, getPreviewMessage, useClientsService } from '@/services/conversations'
 import { format, formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale/es'
 import type { Conversation, Message, Client } from '@/services/types'
 import BaseLayout from '@/components/BaseLayout/BaseLayout.vue'
 import ConversationCard from '@/components/ConversationCard/ConversationCard.vue'
+import { useConversationsStore } from '@/stores/conversations'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
-// This file is aligned with the updated Client type: { _id, name, updatedAt, createdAt }
-const { getConversations } = useConversationsService()
-const { getClients } = useClientsService()
-const conversations = ref<Conversation[]>([])
-const clients = ref<Client[]>([])
+
+const conversationsStore = useConversationsStore()
+const { conversations, isLoading, error } = storeToRefs(conversationsStore)
+const { fetchConversations } = conversationsStore
+
 const previewMessages = ref<Record<string, Message | null>>({})
 
 const clientMap = computed<Record<string, Client>>(() => {
   const map: Record<string, Client> = {}
-  for (const client of clients.value) {
-    map[client._id] = client
-  }
+  conversations.value.forEach(conv => {
+    if (conv.client) {
+      map[conv.clientId] = conv.client
+    }
+  })
   return map
 })
 
 onMounted(async () => {
   try {
-    conversations.value = await getConversations()
-    clients.value = await getClients()
-    
-    // Debug logging
-    console.log('Conversations:', conversations.value)
-    console.log('Clients:', clients.value)
-    console.log('ClientMap:', clientMap.value)
-    
-    // Check for mismatches
+    await fetchConversations()
+
+    // Populate previewMessages from the store's conversations
     conversations.value.forEach(conv => {
-      const client = clientMap.value[conv.clientId]
-      console.log(`Conversation ${conv.clientId} -> Client:`, client)
-      if (!client) {
-        console.error(`No client found for conversation ${conv.clientId}`)
+      if (conv.lastMessage) {
+        previewMessages.value[conv.clientId] = conv.lastMessage
       }
     })
-    
-    // Fetch preview messages for each conversation
-    await Promise.all(
-      conversations.value.map(async (conv) => {
-        const preview = await getPreviewMessage(conv.clientId)
-        previewMessages.value[conv.clientId] = preview
-      })
-    )
-  } catch (error) {
-    console.error('Error fetching conversations or clients:', error)
+
+  } catch (err) {
+    console.error('Error fetching conversations:', err)
   }
 })
 

@@ -40,6 +40,7 @@ export interface Conversation {
   messages: Message[]
   lastMessage: Message
   unreadCount: number
+  client?: Client // Added client property
 }
 
 export interface AuthResponse {

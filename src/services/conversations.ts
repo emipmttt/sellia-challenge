@@ -74,6 +74,7 @@ export const useConversationsService = () => {
   }
 
   const getConversationById = async (clientId: string): Promise<Conversation> => {
+    console.log(`Attempting to fetch full conversation for clientId: ${clientId}`); // Debug log
     try {
       const [messages, client] = await Promise.all([
         api.get(`${clientId}.json`),
