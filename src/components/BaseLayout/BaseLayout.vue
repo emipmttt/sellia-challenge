@@ -22,16 +22,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Logo from '@/components/Logo/Logo.vue'
 import SideMenu from '@/components/SideMenu/SideMenu.vue'
 
 const menuOpen = ref(false)
+const router = useRouter()
 
 function handleSignOut() {
-  // Emit signout event for parent layout/view to handle
-  // You can add additional logic here if needed
-  // Example: emit('signout') if using defineEmits
-  window.location.href = '/login' // or use router if available
+  router.push('/login')
 }
 </script>
 
