@@ -1,10 +1,6 @@
 <template>
   <div :class="{ 'logo-sellia': !isHeader, 'sellia-logo-header': isHeader }">
-    <img
-      class="sellia-logo"
-      :src="logoSrc"
-      alt="Logo de Sellia"
-    />
+    <img class="sellia-logo" :src="logoSrc" alt="Logo de Sellia" />
   </div>
 </template>
 
@@ -31,6 +27,6 @@ onUnmounted(() => {
 })
 
 const logoSrc = computed(() =>
-  isDark.value ? import.meta.env.BASE_URL + 'logo-white.png' : import.meta.env.BASE_URL + 'logo.png'
+  isDark.value ? import.meta.env.BASE_URL + '/sellia-challenge/logo-white.png' : import.meta.env.BASE_URL + '/sellia-challenge/logo.png'
 )
 </script>
