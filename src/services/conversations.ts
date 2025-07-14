@@ -1,33 +1,42 @@
-import api from './api'
-import type { Conversation, Message, Client } from './types'
+import api, { NetworkError } from './api';
+import type { Conversation, Message, Client } from './types';
+import { useNotifications } from '@/composables/useNotifications';
 
 // Cache for clients data to avoid redundant API calls
-let clientsCache: Client[] | null = null
-let clientsCacheTime: number = 0
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+let clientsCache: Client[] | null = null;
+let clientsCacheTime: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const getClientsData = async (): Promise<Client[]> => {
-  const now = Date.now()
+  const { showError } = useNotifications();
+  const now = Date.now();
   if (clientsCache && (now - clientsCacheTime) < CACHE_DURATION) {
-    return clientsCache
+    return clientsCache;
   }
   
   try {
-    const response = await api.get('clients.json')
-    const clients = response.data || response
-    clientsCache = Array.isArray(clients) ? clients : []
-    clientsCacheTime = now
-    return clientsCache
-  } catch (error) {
-    console.error('Error fetching clients:', error)
-    throw error
+    const response = await api.get('clients.json');
+    const clients = response.data || response;
+    clientsCache = Array.isArray(clients) ? clients : [];
+    clientsCacheTime = now;
+    return clientsCache;
+  } catch (error: any) {
+    console.error('Error fetching clients:', error);
+    if (error instanceof NetworkError) {
+      showError(error.userMessage);
+    } else {
+      showError('Error al obtener los datos de los clientes. Por favor, inténtalo de nuevo.');
+    }
+    throw error;
   }
-}
+};
 
 export const useConversationsService = () => {
+  const { showError } = useNotifications();
+
   const getConversations = async (): Promise<Conversation[]> => {
     try {
-      const clients = await getClientsData()
+      const clients = await getClientsData();
 
       return clients.map((client: Client): Conversation => ({
         clientId: client._id,
@@ -48,30 +57,40 @@ export const useConversationsService = () => {
           createdAt: client.lastMessageDate || new Date().toISOString(),
         },
         unreadCount: client.unreadCount || 0,
-      }))
-    } catch (error) {
-      console.error('Error fetching conversations:', error)
-      throw error
+      }));
+    } catch (error: any) {
+      console.error('Error fetching conversations:', error);
+      if (error instanceof NetworkError) {
+        showError(error.userMessage);
+      } else {
+        showError('Error al obtener las conversaciones. Por favor, inténtalo de nuevo.');
+      }
+      throw error;
     }
-  }
+  };
 
   const getClients = async (): Promise<Client[]> => {
-    return getClientsData()
-  }
+    return getClientsData();
+  };
 
   const getClientById = async (clientId: string): Promise<Client> => {
     try {
-      const clients = await getClientsData()
-      const client = clients.find((client: Client) => client._id === clientId)
+      const clients = await getClientsData();
+      const client = clients.find((client: Client) => client._id === clientId);
       if (!client) {
-        throw new Error(`Client with ID ${clientId} not found`)
+        throw new Error(`Client with ID ${clientId} not found`);
       }
-      return client
-    } catch (error) {
-      console.error('Error fetching client:', error)
-      throw error
+      return client;
+    } catch (error: any) {
+      console.error('Error fetching client:', error);
+      if (error instanceof NetworkError) {
+        showError(error.userMessage);
+      } else {
+        showError(`Error al obtener el cliente con ID ${clientId}. Por favor, inténtalo de nuevo.`);
+      }
+      throw error;
     }
-  }
+  };
 
   const getConversationById = async (clientId: string): Promise<Conversation> => {
     console.log(`Attempting to fetch full conversation for clientId: ${clientId}`); // Debug log
@@ -79,9 +98,9 @@ export const useConversationsService = () => {
       const [messages, client] = await Promise.all([
         api.get(`${clientId}.json`),
         getClientById(clientId)
-      ])
+      ]);
 
-      const messageList = Array.isArray(messages) ? messages : (messages.data || [])
+      const messageList = Array.isArray(messages) ? messages : (messages.data || []);
 
       return {
         clientId,
@@ -90,31 +109,44 @@ export const useConversationsService = () => {
           type: msg.type,
           client: clientId,
           message: {
-            _id: msg.message._id,
-            type: msg.message.type,
-            text: msg.message.text,
-            multimedia: msg.message.multimedia,
-            typeUser: msg.message.typeUser,
-            user: msg.message.user,
-            errorCode: msg.message.errorCode,
-            createdAt: msg.message.createdAt,
-            updatedAt: msg.message.updatedAt,
-            readAt: msg.message.readAt,
+            _id: msg.message?._id || '',
+            type: msg.message?.type || 'text',
+            text: msg.message?.text || '',
+            multimedia: msg.message?.multimedia,
+            typeUser: msg.message?.typeUser || 'Client',
+            user: msg.message?.user || '',
+            errorCode: msg.message?.errorCode,
+            createdAt: msg.message?.createdAt || new Date().toISOString(),
+            updatedAt: msg.message?.updatedAt || new Date().toISOString(),
+            readAt: msg.message?.readAt || null,
           },
           createdAt: msg.createdAt,
         })),
         lastMessage: messageList[messageList.length - 1],
         unreadCount: client?.unreadCount || 0,
+      };
+    } catch (error: any) {
+      console.error('Error fetching conversation:', error);
+      if (error instanceof NetworkError) {
+        showError(error.userMessage);
+      } else {
+        showError(`Error al obtener la conversación para el cliente ${clientId}. Por favor, inténtalo de nuevo.`);
       }
-    } catch (error) {
-      throw error
+      throw error;
     }
-  }
+  };
 
   const sendMessage = async (
     clientId: string,
     message: string
   ): Promise<Message> => {
+    const { showError } = useNotifications();
+
+    if (!navigator.onLine) {
+      showError('No hay conexión a internet. Por favor, revisa tu conexión.');
+      throw new NetworkError('No internet connection', 'No hay conexión a internet. Por favor, revisa tu conexión.');
+    }
+
     try {
       const newMessage: Message = {
         _id: Date.now().toString(),
@@ -130,18 +162,19 @@ export const useConversationsService = () => {
           updatedAt: new Date().toISOString(),
         },
         createdAt: new Date().toISOString(),
+      };
+
+      return newMessage;
+    } catch (error: any) {
+      console.error('Error sending message:', error);
+      if (error instanceof NetworkError) {
+        showError(error.userMessage);
+      } else {
+        showError('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
       }
-
-      await api.put(`/${clientId}.json`, {
-        unreadCount: 0,
-      })
-
-      return newMessage
-    } catch (error) {
-      console.error('Error sending message:', error)
-      throw error
+      throw error;
     }
-  }
+  };
 
   return {
     getConversations,
@@ -149,32 +182,39 @@ export const useConversationsService = () => {
     sendMessage,
     getClients,
     getClientById,
-  }
-}
+  };
+};
 
 export const getPreviewMessage = async (clientId: string): Promise<Message | null> => {
+  const { showError } = useNotifications();
   try {
-    const conversation = await conversationsService.getConversationById(clientId)
-    const messages = conversation.messages
-    if (!messages || messages.length === 0) return null
+    const conversation = await conversationsService.getConversationById(clientId);
+    const messages = conversation.messages;
+    if (!messages || messages.length === 0) return null;
     // Find the latest message by createdAt
-    const latest = [...messages].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
-    return latest
-  } catch (error) {
-    return null
+    const latest = [...messages].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+    return latest;
+  } catch (error: any) {
+    console.error('Error fetching preview message:', error);
+    if (error instanceof NetworkError) {
+      showError(error.userMessage);
+    } else {
+      showError(`Error al obtener el mensaje de previsualización para el cliente ${clientId}.`);
+    }
+    return null;
   }
-}
+};
 
 // Export individual functions for backward compatibility
 export const useClientsService = () => {
-  const service = useConversationsService()
+  const service = useConversationsService();
   return {
     getClients: service.getClients,
     getClientById: service.getClientById,
-  }
-}
+  };
+};
 
 
 
 
-export const conversationsService = useConversationsService()
+export const conversationsService = useConversationsService();

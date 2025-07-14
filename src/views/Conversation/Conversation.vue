@@ -43,19 +43,21 @@ import DocumentMessage from '@/components/Messages/DocumentMessage.vue'
 import ButtonMessage from '@/components/Messages/ButtonMessage.vue'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 import MessageInput from '@/components/MessageInput/MessageInput.vue'
-import './Conversation.scss'
+import './Conversation.scss';
 
-import { ref, onMounted, type Ref, watchEffect, nextTick } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useRoute, useRouter } from 'vue-router'
-import { useConversationsService } from '@/services/conversations'
-import { useConversationsStore } from '@/stores/conversations'
-import type { Message, Conversation, Client } from '@/services/types'
+import { ref, onMounted, type Ref, watchEffect, nextTick, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRoute, useRouter } from 'vue-router';
+import { useConversationsService } from '@/services/conversations';
+import { useConversationsStore } from '@/stores/conversations';
+import type { Message, Conversation, Client } from '@/services/types';
+import { useNotifications } from '@/composables/useNotifications';
 
-const route = useRoute()
-const $router = useRouter()
-const clientId = route.params.clientId as string
-const { getClientById } = useConversationsService()
+const route = useRoute();
+const $router = useRouter();
+const clientId = route.params.clientId as string;
+const { getClientById } = useConversationsService();
+const { showError } = useNotifications();
 
 const conversationsStore = useConversationsStore()
 const { conversations, isLoading, error } = storeToRefs(conversationsStore)
@@ -84,9 +86,17 @@ const loadConversation = async () => {
     const clientData = await getClientById(clientId)
     client.value = clientData
   } catch (error) {
-    console.error('Error loading conversation:', error)
+    // Error is already handled by the store and propagated via the 'error' ref
+    console.error('Error loading conversation:', error);
   }
-}
+};
+
+watch(error, (newError) => {
+  if (newError) {
+    // Error notification is already handled by the conversations store
+    // This watch can be used for other reactions to the error state if needed
+  }
+});
 
 const handleMessageSent = () => {
   const randomMessages = [

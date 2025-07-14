@@ -15,17 +15,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { format, formatDistanceToNow } from 'date-fns'
-import { es } from 'date-fns/locale/es'
-import type { Conversation, Message, Client } from '@/services/types'
-import BaseLayout from '@/components/BaseLayout/BaseLayout.vue'
-import ConversationCard from '@/components/ConversationCard/ConversationCard.vue'
-import { useConversationsStore } from '@/stores/conversations'
-import { storeToRefs } from 'pinia'
+import { ref, onMounted, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { format, formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale/es';
+import type { Conversation, Message, Client } from '@/services/types';
+import BaseLayout from '@/components/BaseLayout/BaseLayout.vue';
+import ConversationCard from '@/components/ConversationCard/ConversationCard.vue';
+import { useConversationsStore } from '@/stores/conversations';
+import { storeToRefs } from 'pinia';
+import { useNotifications } from '@/composables/useNotifications';
 
-const router = useRouter()
+const router = useRouter();
+const { showError } = useNotifications();
 
 const conversationsStore = useConversationsStore()
 const { conversations, isLoading, error } = storeToRefs(conversationsStore)
@@ -55,7 +57,15 @@ onMounted(async () => {
     })
 
   } catch (err) {
-    console.error('Error fetching conversations:', err)
+    // Error is already handled by the store and propagated via the 'error' ref
+    console.error('Error fetching conversations:', err);
+  }
+});
+
+watch(error, (newError) => {
+  if (newError) {
+    // Error notification is already handled by the conversations store
+    // This watch can be used for other reactions to the error state if needed
   }
 })
 

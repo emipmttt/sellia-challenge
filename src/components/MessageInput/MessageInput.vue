@@ -19,16 +19,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { PaperAirplaneIcon, PaperClipIcon } from '@heroicons/vue/24/outline'
-import { useConversationsStore } from '@/stores/conversations'
-import { useRoute } from 'vue-router'
-import type { Message } from '@/services/types'
+import { ref } from 'vue';
+import { PaperAirplaneIcon, PaperClipIcon } from '@heroicons/vue/24/outline';
+import { useConversationsStore } from '@/stores/conversations';
+import { useRoute } from 'vue-router';
+import type { Message } from '@/services/types';
+import { useConversationsService } from '@/services/conversations';
+import { useNotifications } from '@/composables/useNotifications';
 
-const route = useRoute()
-const clientId = route.params.clientId as string
-const conversationsStore = useConversationsStore()
-const { addMessageToConversation } = conversationsStore
+const route = useRoute();
+const clientId = route.params.clientId as string;
+const conversationsStore = useConversationsStore();
+const { addMessageToConversation } = conversationsStore;
+const conversationsService = useConversationsService();
+const { showError } = useNotifications();
 
 const props = defineProps({
   isLoading: {
@@ -77,36 +81,48 @@ const handleSendMessage = async () => {
       createdAt: new Date().toISOString(),
     }
 
-    if (attachedFiles.value.length > 0) {
-      attachedFiles.value.forEach(file => {
-        const fileMessage: Message = {
-          _id: Date.now().toString() + '_file',
-          type: 'Message',
-          client: clientId,
-          message: {
-            _id: Date.now().toString() + '_file_content',
-            type: file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'document',
-            multimedia: {
-              file: URL.createObjectURL(file),
-              filename: file.name,
-              mimetype: file.type,
-              size: file.size.toString(),
+    try {
+      if (attachedFiles.value.length > 0) {
+        for (const file of attachedFiles.value) {
+          const fileMessage: Message = {
+            _id: Date.now().toString() + '_file',
+            type: 'Message',
+            client: clientId,
+            message: {
+              _id: Date.now().toString() + '_file_content',
+              type: file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'document',
+              multimedia: {
+                file: URL.createObjectURL(file),
+                filename: file.name,
+                mimetype: file.type,
+                size: file.size.toString(),
+              },
+              typeUser: 'User',
+              user: 'current_user',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
             },
-            typeUser: 'User',
-            user: 'current_user',
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          createdAt: new Date().toISOString(),
+          };
+          // Assuming sendMessage can handle file messages or we need a separate service call
+          // For now, we'll just add to conversation locally and rely on the service to handle actual sending
+          // If the service needs to send the file, this part needs more logic.
+          addMessageToConversation(clientId, fileMessage);
+          // In a real app, you'd send the file via API here:
+          // await conversationsService.sendMessage(clientId, fileMessage);
         }
-        addMessageToConversation(clientId, fileMessage)
-      })
-      attachedFiles.value = [] // Clear attached files after sending
-    } else {
-      addMessageToConversation(clientId, message)
+        attachedFiles.value = []; // Clear attached files after sending
+      } else {
+        await conversationsService.sendMessage(clientId, newMessage.value);
+        addMessageToConversation(clientId, message);
+      }
+      emit('message-sent');
+      newMessage.value = '';
+    } catch (error: any) {
+      // The error notification is already handled by conversations.ts
+      // Here we just prevent clearing the input so user can retry
+      console.error('Failed to send message:', error);
     }
-    emit('message-sent')
-    newMessage.value = ''
   }
 }
 </script>
