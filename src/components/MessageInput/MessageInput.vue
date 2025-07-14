@@ -116,7 +116,8 @@ const handleSendMessage = async () => {
   display: flex;
   padding: 10px;
   border-top: 1px solid #eee;
-  background-color: #fff;
+  background-color: var(--color-bg);
+  border-top: 1px solid var(--color-border);
 
   input {
     flex-grow: 1;
@@ -125,9 +126,11 @@ const handleSendMessage = async () => {
     padding: 8px 15px;
     margin-right: 10px;
     outline: none;
+    background-color: var(--color-input-bg);
+    color: var(--color-input-text);
 
     &:focus {
-      border-color: var(--primary-color);
+      border-color: var(--color-primary);
     }
   }
 
@@ -167,8 +170,12 @@ const handleSendMessage = async () => {
     margin-right: 5px;
 
     &:hover {
-      background-color: #f0f0f0;
+      background-color: var(--color-card-hover);
       border-radius: 50%;
+    }
+
+    .text-gray-500 {
+      color: var(--color-text-muted); /* Use muted text color for icon */
     }
   }
 
@@ -195,10 +202,18 @@ const handleSendMessage = async () => {
     .remove-file-btn {
       background: none;
       border: none;
-      color: #777;
+      color: #777; /* Default light mode color for remove button */
       cursor: pointer;
       font-weight: bold;
       margin-left: 5px;
+    }
+
+    /* Applying variables for file-preview-item */
+    background-color: var(--color-card-hover);
+    color: var(--color-text);
+
+    .remove-file-btn {
+      color: var(--color-text-muted);
     }
   }
 }

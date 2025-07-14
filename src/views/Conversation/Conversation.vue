@@ -157,7 +157,6 @@ const getMessageContent = (message: Message) => {
     const fileName = message.message.multimedia?.filename || (message.message.multimedia?.file ? message.message.multimedia.file.split('/').pop() : 'Document');
     return { component: DocumentMessage, props: { href: message.message.multimedia?.file, filename: fileName } };
   }
-  console.log('Unsupported message type:', JSON.stringify(message));
   return '[Mensaje no soportado]';
 }
 
