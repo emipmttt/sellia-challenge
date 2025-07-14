@@ -34,7 +34,7 @@ export const useConversationsService = () => {
 
   const getConversationById = async (clientId: string): Promise<Conversation> => {
     try {
-      const messages = await api.get(`/${clientId}.json`)
+      const messages = await api.get(`${clientId}.json`)
       const client = (await api.get('clients.json')).find((c: Client) => c._id === clientId)
 
       return {
@@ -103,5 +103,21 @@ export const useConversationsService = () => {
     sendMessage,
   }
 }
+
+export const getPreviewMessage = async (clientId: string): Promise<Message | null> => {
+  try {
+    const conversation = await conversationsService.getConversationById(clientId)
+    const messages = conversation.messages
+    if (!messages || messages.length === 0) return null
+    // Find the latest message by createdAt
+    const latest = [...messages].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    return latest
+  } catch (error) {
+    return null
+  }
+}
+
+
+
 
 export const conversationsService = useConversationsService()

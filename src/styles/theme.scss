@@ -4,6 +4,12 @@
   --color-primary-hover: #1740b5;
   --color-bg: #fff;
   --color-card: #fff;
+  --color-header: #fff;
+  --color-border: #e2e8f0;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-status-active: #1ed600;
+  --color-status-inactive: #d1d5db;
   --color-label: #444;
   --color-logo-text: #222;
   --color-input-border: #ccc;
@@ -18,8 +24,14 @@
   :root {
     --color-primary: #3b82f6;
     --color-primary-hover: #2563eb;
-    --color-bg: #181a20;
-    --color-card: #23262f;
+    --color-bg: #0f172a;
+    --color-card: #1f2937;
+    --color-header: #2e3342;
+    --color-border: #374151;
+    --color-text: #f8fafc;
+    --color-text-muted: #d1d5db;
+    --color-status-active: #1ed600;
+    --color-status-inactive: #4b5563;
     --color-label: #bbb;
     --color-logo-text: #fff;
     --color-input-border: #444;

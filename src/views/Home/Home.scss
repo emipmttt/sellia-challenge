@@ -1,0 +1,95 @@
+.home-container {
+  padding: 1rem;
+}
+
+.conversations-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 600px;
+  background: transparent;
+}
+
+.conversation-card {
+  display: flex;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.1rem 1rem 1.1rem 0.7rem;
+  background: var(--color-card);
+  cursor: pointer;
+  transition: background 0.2s;
+  min-height: 64px;
+  position: relative;
+
+  &:hover {
+    background: var(--color-card-hover);
+  }
+}
+
+.status-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-status-inactive);
+  margin-top: 0.3rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+
+  &.active {
+    background: var(--color-status-active);
+  }
+}
+
+.conversation-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.conversation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.2rem;
+
+  .client-name {
+    font-weight: 500;
+    color: var(--color-text);
+    font-size: 1.08rem;
+    margin-bottom: 0.1rem;
+  }
+  .conversation-date {
+    color: var(--color-text-muted);
+    font-size: 0.93rem;
+    margin-left: 1rem;
+    white-space: nowrap;
+  }
+}
+
+.client-name {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.conversation-date {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.conversation-preview {
+  color: var(--color-text-muted);
+  font-size: 0.97rem;
+  margin-top: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 98vw;
+}
+
+[data-theme="dark"] {
+  .conversation-card {
+    border: 1px solid var(--color-border);
+  }
+}
