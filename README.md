@@ -1,26 +1,31 @@
 # Sellia Challenge
 
-## Project Setup
 
-Follow these steps to get the project up and running locally:
+### Features
+- Authentication
+- Dark mode
+- Font size control
+- Responsive design
+- List of conversations
+    - Last message time
+    - Last message preview
+- Conversations View
+    - Message list
+    - Message input
+    - Send button
+    - Attach files of type image, video and docs.
+    - Display image, video and docs in the message list.
+    - Display parsed buttons in the message list.
 
-### Install Dependencies
+### Screenshots
 
-```sh
-npm install
-```
+![Screenshot 1](src/docs/screenshots/Screenshot 1.png)
+![Screenshot 2](src/docs/screenshots/Screenshot 2.png)
+![Screenshot 3](src/docs/screenshots/Screenshot 3.png)
+![Screenshot 4](src/docs/screenshots/Screenshot 4.png)
+![Screenshot 5](src/docs/screenshots/Screenshot 5.png)
+![Screenshot 6](src/docs/screenshots/Screenshot 6.png)
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
 
 ### Architectural Decisions
 
@@ -58,3 +63,35 @@ npm run build
 npm run test:unit
 ```
 
+### Deploy
+
+Deployment is handled by GitHub Actions, we configured it in the .github/workflows/deploy.yml file.
+
+First it builds the project, then it deploys it to GitHub Pages to the gh-pages branch.
+Demo Available at: https://emipmttt.github.io/sellia-challenge/
+
+### Design 
+Design available at: https://www.figma.com/design/qrE6Q17Z1UfEli9yKJja5A/Sellia?node-id=0-1&t=7IsTNpVplV5VXMo6-1
+
+
+## Project Setup
+
+Follow these steps to get the project up and running locally:
+
+### Install Dependencies
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Type-Check, Compile and Minify for Production
+
+```sh
+npm run build
+```
