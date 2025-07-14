@@ -19,12 +19,12 @@
 
 ### Screenshots
 
-![Screenshot 1](src/docs/screenshots/Screenshot 1.png)
-![Screenshot 2](src/docs/screenshots/Screenshot 2.png)
-![Screenshot 3](src/docs/screenshots/Screenshot 3.png)
-![Screenshot 4](src/docs/screenshots/Screenshot 4.png)
-![Screenshot 5](src/docs/screenshots/Screenshot 5.png)
-![Screenshot 6](src/docs/screenshots/Screenshot 6.png)
+![Screenshot 1](/src/docs/screenshots/Screenshot 1.png)
+![Screenshot 2](/src/docs/screenshots/Screenshot 2.png)
+![Screenshot 3](/src/docs/screenshots/Screenshot 3.png)
+![Screenshot 4](/src/docs/screenshots/Screenshot 4.png)
+![Screenshot 5](/src/docs/screenshots/Screenshot 5.png)
+![Screenshot 6](/src/docs/screenshots/Screenshot 6.png)
 
 
 ### Architectural Decisions
