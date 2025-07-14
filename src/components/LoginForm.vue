@@ -1,6 +1,6 @@
 <template>
   <div class="login-form__container">
-    <Logo />
+    <Logo :isHeader="false" />
     <form class="login-form" @submit.prevent="onSubmit">
       <InputField
         id="email"

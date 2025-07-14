@@ -2,7 +2,7 @@
   <div class="base-layout">
     <header class="layout-header">
       <div class="logo-container">
-        <Logo isHeader={true} />
+        <Logo :isHeader="true" />
       </div>
       <slot name="header-actions"></slot>
       <button class="hamburger-btn" aria-label="Abrir menú" @click="menuOpen = true">
