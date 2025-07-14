@@ -27,6 +27,6 @@ onUnmounted(() => {
 })
 
 const logoSrc = computed(() =>
-  isDark.value ? import.meta.env.BASE_URL + '/sellia-challenge/logo-white.png' : import.meta.env.BASE_URL + '/sellia-challenge/logo.png'
+  isDark.value ? import.meta.env.BASE_URL + 'logo-white.png' : import.meta.env.BASE_URL + 'logo.png'
 )
 </script>
