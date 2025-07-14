@@ -3,7 +3,7 @@
     <template #header-actions>
       <div class="conv-header-actions">
         <button class="back-btn" @click="$router.back()" aria-label="Back">
-          <ArrowLeftIcon class="h-6 w-6" />
+          <ArrowLeftIcon class="h-6 w-6" style="width: 24px; height: 24px;" />
         </button>
         <span class="online-dot" :class="{ online: client }"></span>
         <span class="client-name">{{ client?.name || 'Cargando...' }}</span>

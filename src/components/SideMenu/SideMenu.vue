@@ -2,7 +2,6 @@
   <div class="side-menu" :class="{ open: modelValue }">
     <div class="side-menu-header">
       <button class="close-btn" @click="$emit('update:modelValue', false)" aria-label="Cerrar menú">
-        <!-- Heroicons X Mark -->
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -45,7 +44,7 @@ const fontSizeStep = 1
 onMounted(() => {
   const savedTheme = localStorage.getItem('theme')
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-  
+
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     document.documentElement.classList.add('dark')
     isDark.value = true
@@ -176,7 +175,7 @@ function signOut() {
       padding: 0.3125rem 0.625rem;
       cursor: pointer;
       transition: background 0.3s, color 0.3s, border-color 0.3s;
-      font-size: 1rem; /* Base font size for buttons */
+      font-size: 1rem;
 
       &:hover {
         background: var(--color-border);
@@ -184,15 +183,15 @@ function signOut() {
     }
 
     input[type="number"] {
-      width: 3.75rem; /* Adjust width as needed */
+      width: 3.75rem;
       text-align: center;
       background: var(--color-bg);
       color: var(--color-text);
       border: 1px solid var(--color-border);
       border-radius: 0.5rem;
       padding: 0.3125rem 0.15625rem;
-      -moz-appearance: textfield; /* Hide Firefox Firefox number input arrows */
-      -webkit-appearance: none; /* Hide Chrome, Safari, Edge, Opera number input arrows */
+      -moz-appearance: textfield;
+      -webkit-appearance: none;
 
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button {
