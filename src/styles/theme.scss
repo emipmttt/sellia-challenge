@@ -4,6 +4,7 @@
   --color-primary-hover: #1740b5;
   --color-bg: #fff;
   --color-card: #fff;
+  --color-card-hover: #f3f4f6;
   --color-header: #fff;
   --color-border: #e2e8f0;
   --color-text: #1f2937;
@@ -20,25 +21,50 @@
   --color-error: #e53935;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #3b82f6;
-    --color-primary-hover: #2563eb;
-    --color-bg: #0f172a;
-    --color-card: #1f2937;
-    --color-header: #2e3342;
-    --color-border: #374151;
-    --color-text: #f8fafc;
-    --color-text-muted: #d1d5db;
-    --color-status-active: #1ed600;
-    --color-status-inactive: #4b5563;
-    --color-label: #bbb;
-    --color-logo-text: #fff;
-    --color-input-border: #444;
-    --color-input-bg: #23262f;
-    --color-input-bg-focus: #181a20;
-    --color-input-bg-error: #2b1b1b;
-    --color-input-text: #fff;
-    --color-error: #ff6b6b;
-  }
+/* Manual dark mode toggle - higher priority */
+html.dark {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-bg: #0f172a;
+  --color-card: #1f2937;
+  --color-card-hover: #2d3748;
+  --color-header: #2e3342;
+  --color-border: #374151;
+  --color-text: #f8fafc;
+  --color-text-muted: #d1d5db;
+  --color-status-active: #1ed600;
+  --color-status-inactive: #4b5563;
+  --color-label: #bbb;
+  --color-logo-text: #fff;
+  --color-input-border: #444;
+  --color-input-bg: #23262f;
+  --color-input-bg-focus: #181a20;
+  --color-input-bg-error: #2b1b1b;
+  --color-input-text: #ddd;
+  --color-error: #ff6b6b;
 }
+
+/* Manual light mode toggle - override system preference */
+html:not(.dark) {
+  --color-primary: #2563eb;
+  --color-primary-hover: #1740b5;
+  --color-bg: #fff;
+  --color-card: #fff;
+  --color-card-hover: #f3f4f6;
+  --color-header: #fff;
+  --color-border: #e2e8f0;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-status-active: #1ed600;
+  --color-status-inactive: #d1d5db;
+  --color-label: #444;
+  --color-logo-text: #222;
+  --color-input-border: #ccc;
+  --color-input-bg: #eee;
+  --color-input-bg-focus: #fff;
+  --color-input-bg-error: #fff6f6;
+  --color-input-text: #222;
+  --color-error: #e53935;
+}
+
+/* Only manual html.dark and html:not(.dark) selectors are used for theming. */

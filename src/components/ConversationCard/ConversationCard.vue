@@ -14,12 +14,15 @@
 </template>
 
 <script setup lang="ts">
+// This component is aligned with the updated Client type: { _id, name, updatedAt, createdAt }
 import type { Conversation, Message } from '@/services/types'
 import { computed } from 'vue'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale/es'
+import type { Client } from '@/services/types'
 
 const props = defineProps<{
+  client: Client | undefined,
   conversation: Conversation,
   isActive: boolean,
   previewMessage: Message | null,
@@ -29,10 +32,7 @@ const emit = defineEmits(['click'])
 const onClick = () => emit('click', props.conversation.clientId)
 
 const clientName = computed(() => {
-  // Use clientName if available, else fallback
-  // @ts-ignore
-  if (props.conversation.clientName) return props.conversation.clientName
-  return `Cliente ${props.conversation.clientId.slice(-4)}`
+  return props.client?.name || 'Cliente desconocido'
 })
 
 const latestMessageDateLabel = computed(() => {

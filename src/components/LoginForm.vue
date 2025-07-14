@@ -89,14 +89,14 @@ async function onSubmit() {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .login-form__container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: var(--color-bg, #fff);
+  background: var(--color-bg);
   transition: background 0.3s;
   padding: 2rem 0;
 }
@@ -104,14 +104,22 @@ async function onSubmit() {
 .login-form {
   width: 100%;
   max-width: 340px;
-  background: var(--color-card, #fff);
+  background: var(--color-card);
+  color: var(--color-text);
   border-radius: 14px;
   box-shadow: 0 2px 24px 0 rgba(0,0,0,0.04);
   padding: 2.5rem 2rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  // Always use theme variables for background, border, and text for dark mode support
 }
+
+.login-form label, .login-form input, .login-form button {
+  color: var(--color-text);
+  background: transparent;
+}
+
 
 @media (max-width: 400px) {
   .login-form {

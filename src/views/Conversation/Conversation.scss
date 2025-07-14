@@ -1,67 +1,171 @@
+.conv-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0.25rem 0.5rem;
+  border-radius: 50%;
+  transition: background 0.2s;
+  &:hover,
+  &:focus {
+    background: var(--color-card-hover);
+  }
+}
+
+.online-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-status-inactive);
+  margin-right: 0.5rem;
+  &.online {
+    background: var(--color-status-active);
+    box-shadow: 0 0 0 2px var(--color-header);
+  }
+}
+
+.client-name {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 1.1rem;
+}
+
 .conversation-container {
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
 }
 
 .chat-area {
-  height: 600px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 64px); // header height
+  background: var(--color-bg);
 }
 
 .messages {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 1.5rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
 .message {
-  margin: 10px 0;
+  display: flex;
+}
+.message.right {
+  justify-content: flex-end;
 }
 
 .message-content {
-  padding: 8px 12px;
-  border-radius: 12px;
-  max-width: 70%;
-}
-
-.message-content:not(.is-mine) {
-  background-color: #f0f0f0;
-  margin-left: auto;
+  padding: 1.1rem 1.4rem;
+  border-radius: 1.5rem;
+  max-width: 75%;
+  font-size: 1.08rem;
+  word-break: break-word;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  background: var(--color-card);
+  color: var(--color-text);
+  transition: background 0.2s, color 0.2s;
 }
 
 .message-content.is-mine {
-  background-color: #42b883;
-  color: white;
-  margin-right: auto;
+  background: var(--color-primary);
+  color: #fff;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  border-top-left-radius: 1.5rem;
+}
+
+.message-content:not(.is-mine) {
+  background: var(--color-card-hover);
+  color: var(--color-text);
+  border-bottom-right-radius: 0.5rem;
+  border-bottom-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  border-top-left-radius: 1.5rem;
 }
 
 .input-area {
-  padding: 10px;
   display: flex;
-  gap: 10px;
-  border-top: 1px solid #ddd;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1rem 1.25rem 1rem;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  position: relative;
 }
 
-input {
+.input-area input {
   flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.9rem 1.2rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-input-border);
+  background: var(--color-input-bg);
+  color: var(--color-input-text);
+  font-size: 1.05rem;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
 }
 
-button {
-  padding: 8px 16px;
-  background-color: #42b883;
-  color: white;
+.input-area input:focus {
+  border-color: var(--color-primary);
+  background: var(--color-input-bg-focus);
+}
+
+.send-btn {
+  background: none;
   border: none;
-  border-radius: 4px;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
   cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  transition: background 0.2s;
+  color: var(--color-primary);
+  &:hover:enabled,
+  &:focus:enabled {
+    background: var(--color-card-hover);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
-button:hover {
-  background-color: #35a26d;
+@media (max-width: 640px) {
+  .conversation-container {
+    padding: 0;
+  }
+  .chat-area {
+    height: calc(100vh - 56px);
+  }
+  .messages {
+    padding: 1rem 0.3rem 0.7rem 0.3rem;
+  }
+  .input-area {
+    padding: 0.7rem 0.3rem 0.9rem 0.3rem;
+  }
 }

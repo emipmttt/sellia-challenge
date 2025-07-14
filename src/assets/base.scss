@@ -33,11 +33,49 @@
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
 
+  /* Direct component variables for better compatibility */
+  --color-bg: var(--vt-c-white);
+  --color-header: var(--vt-c-white);
+
   --section-gap: 160px;
 }
 
+/* Manual dark mode toggle - higher specificity */
+html.dark {
+  --color-background: var(--vt-c-black) !important;
+  --color-background-soft: var(--vt-c-black-soft) !important;
+  --color-background-mute: var(--vt-c-black-mute) !important;
+
+  --color-border: var(--vt-c-divider-dark-2) !important;
+  --color-border-hover: var(--vt-c-divider-dark-1) !important;
+
+  --color-heading: var(--vt-c-text-dark-1) !important;
+  --color-text: var(--vt-c-text-dark-2) !important;
+
+  /* Direct component variables for better compatibility */
+  --color-bg: var(--vt-c-black) !important;
+  --color-header: var(--vt-c-black) !important;
+}
+
+/* Manual light mode toggle - override system preference */
+html:not(.dark) {
+  --color-background: var(--vt-c-white) !important;
+  --color-background-soft: var(--vt-c-white-soft) !important;
+  --color-background-mute: var(--vt-c-white-mute) !important;
+
+  --color-border: var(--vt-c-divider-light-2) !important;
+  --color-border-hover: var(--vt-c-divider-light-1) !important;
+
+  --color-heading: var(--vt-c-text-light-1) !important;
+  --color-text: var(--vt-c-text-light-1) !important;
+
+  /* Direct component variables for better compatibility */
+  --color-bg: var(--vt-c-white) !important;
+  --color-header: var(--vt-c-white) !important;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.dark):not([class]) {
     --color-background: var(--vt-c-black);
     --color-background-soft: var(--vt-c-black-soft);
     --color-background-mute: var(--vt-c-black-mute);
@@ -47,6 +85,10 @@
 
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
+
+    /* Direct component variables for better compatibility */
+    --color-bg: var(--vt-c-black);
+    --color-header: var(--vt-c-black);
   }
 }
 

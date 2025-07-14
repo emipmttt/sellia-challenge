@@ -55,10 +55,8 @@ export interface LoginCredentials {
 export interface Client {
   _id: string
   name: string
-  createdAt: string
   updatedAt: string
-  email?: string
-  avatar?: string
+  createdAt: string
   lastMessage?: string
   lastMessageDate?: string
   unreadCount?: number

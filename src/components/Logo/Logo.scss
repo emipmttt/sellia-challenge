@@ -4,16 +4,23 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 2rem;
-}
 
-.sellia-logo {
-  width: 150px;
-  height: auto;
-  content: url('/logo.png');
-}
-
-@media (prefers-color-scheme: dark) {
   .sellia-logo {
-    content: url('/logo-white.png');
+    width: 150px;
+    height: auto;
+  }
+
+}
+
+.sellia-logo-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  .sellia-logo {
+    width: 70px;
+    height: auto;
   }
 }
+

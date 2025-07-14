@@ -1,10 +1,33 @@
 import api from './api'
 import type { Conversation, Message, Client } from './types'
 
+// Cache for clients data to avoid redundant API calls
+let clientsCache: Client[] | null = null
+let clientsCacheTime: number = 0
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
+const getClientsData = async (): Promise<Client[]> => {
+  const now = Date.now()
+  if (clientsCache && (now - clientsCacheTime) < CACHE_DURATION) {
+    return clientsCache
+  }
+  
+  try {
+    const response = await api.get('clients.json')
+    const clients = response.data || response
+    clientsCache = Array.isArray(clients) ? clients : []
+    clientsCacheTime = now
+    return clientsCache
+  } catch (error) {
+    console.error('Error fetching clients:', error)
+    throw error
+  }
+}
+
 export const useConversationsService = () => {
   const getConversations = async (): Promise<Conversation[]> => {
     try {
-      const clients = await api.get('clients.json')
+      const clients = await getClientsData()
 
       return clients.map((client: Client): Conversation => ({
         clientId: client._id,
@@ -32,14 +55,36 @@ export const useConversationsService = () => {
     }
   }
 
+  const getClients = async (): Promise<Client[]> => {
+    return getClientsData()
+  }
+
+  const getClientById = async (clientId: string): Promise<Client> => {
+    try {
+      const clients = await getClientsData()
+      const client = clients.find((client: Client) => client._id === clientId)
+      if (!client) {
+        throw new Error(`Client with ID ${clientId} not found`)
+      }
+      return client
+    } catch (error) {
+      console.error('Error fetching client:', error)
+      throw error
+    }
+  }
+
   const getConversationById = async (clientId: string): Promise<Conversation> => {
     try {
-      const messages = await api.get(`${clientId}.json`)
-      const client = (await api.get('clients.json')).find((c: Client) => c._id === clientId)
+      const [messages, client] = await Promise.all([
+        api.get(`${clientId}.json`),
+        getClientById(clientId)
+      ])
+
+      const messageList = Array.isArray(messages) ? messages : (messages.data || [])
 
       return {
         clientId,
-        messages: messages.map((msg: any): Message => ({
+        messages: messageList.map((msg: any): Message => ({
           _id: msg._id,
           type: msg.type,
           client: clientId,
@@ -57,7 +102,7 @@ export const useConversationsService = () => {
           },
           createdAt: msg.createdAt,
         })),
-        lastMessage: messages[messages.length - 1],
+        lastMessage: messageList[messageList.length - 1],
         unreadCount: client?.unreadCount || 0,
       }
     } catch (error) {
@@ -101,6 +146,8 @@ export const useConversationsService = () => {
     getConversations,
     getConversationById,
     sendMessage,
+    getClients,
+    getClientById,
   }
 }
 
@@ -114,6 +161,15 @@ export const getPreviewMessage = async (clientId: string): Promise<Message | nul
     return latest
   } catch (error) {
     return null
+  }
+}
+
+// Export individual functions for backward compatibility
+export const useClientsService = () => {
+  const service = useConversationsService()
+  return {
+    getClients: service.getClients,
+    getClientById: service.getClientById,
   }
 }
 
