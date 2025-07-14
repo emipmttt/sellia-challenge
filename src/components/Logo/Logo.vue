@@ -31,6 +31,6 @@ onUnmounted(() => {
 })
 
 const logoSrc = computed(() =>
-  isDark.value ? '/logo-white.png' : '/logo.png'
+  isDark.value ? import.meta.env.BASE_URL + 'logo-white.png' : import.meta.env.BASE_URL + 'logo.png'
 )
 </script>
