@@ -19,13 +19,12 @@
 
 ### Screenshots
 
-![Screenshot 1](/src/docs/screenshots/Screenshot 1.png)
-![Screenshot 2](/src/docs/screenshots/Screenshot 2.png)
-![Screenshot 3](/src/docs/screenshots/Screenshot 3.png)
-![Screenshot 4](/src/docs/screenshots/Screenshot 4.png)
-![Screenshot 5](/src/docs/screenshots/Screenshot 5.png)
-![Screenshot 6](/src/docs/screenshots/Screenshot 6.png)
-
+<img width="1239" height="846" alt="Screenshot 6" src="https://github.com/user-attachments/assets/c587bec5-a418-4521-b511-de6590908a20" />
+<img width="1222" height="846" alt="Screenshot 5" src="https://github.com/user-attachments/assets/63270f69-2bb4-4db6-8daa-688b29066ca7" />
+<img width="1230" height="852" alt="Screenshot 4" src="https://github.com/user-attachments/assets/bc8a167d-3a63-4dae-8c32-258db7cc616d" />
+<img width="437" height="849" alt="Screenshot 3" src="https://github.com/user-attachments/assets/f1c3e13d-c24e-45fb-8ec2-599cc4afb8ab" />
+<img width="478" height="847" alt="Screenshot 2" src="https://github.com/user-attachments/assets/f36d9b33-48d6-4712-8c9b-a7db9ab689ab" />
+<img width="1240" height="852" alt="Screenshot 1" src="https://github.com/user-attachments/assets/9aeb5656-5d05-45fb-b30e-36a1d15090fb" />
 
 ### Architectural Decisions
 
