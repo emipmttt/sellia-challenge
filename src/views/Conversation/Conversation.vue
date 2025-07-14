@@ -3,12 +3,10 @@
     <template #header-actions>
       <div class="conv-header-actions">
         <button class="back-btn" @click="$router.back()" aria-label="Back">
-          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <ArrowLeftIcon class="h-6 w-6" />
         </button>
         <span class="online-dot" :class="{ online: client }"></span>
-        <span class="client-name">{{ client?.name || 'Loading...' }}</span>
+        <span class="client-name">{{ client?.name || 'Cargando...' }}</span>
       </div>
     </template>
     <div class="conversation-container">
@@ -16,22 +14,28 @@
         <div class="messages">
           <div v-for="message in messages" :key="message._id" :class="['message', { 'right': !isMyMessage(message) }]">
             <div :class="['message-content', { 'is-mine': isMyMessage(message) }]">
-              {{ getMessageText(message) }}
+              <template v-if="typeof getMessageContent(message) === 'string'">
+                {{ getMessageContent(message) }}
+              </template>
+              <template v-else>
+                <component
+                  :is="(getMessageContent(message) as any).component"
+                  v-bind="(getMessageContent(message) as any).props"
+
+                ></component>
+              </template>
             </div>
           </div>
         </div>
         <div class="input-area">
           <input
             v-model="newMessage"
-            @keypress.enter="sendMessage"
+            @keypress.enter="handleSendMessage()"
             :disabled="isLoading"
-            placeholder="Type a message..."
+            placeholder="Escribe un mensaje..."
           />
-          <button class="send-btn" @click="sendMessage" :disabled="isLoading || !newMessage.trim()">
-            <svg width="28" height="28" fill="none" stroke="var(--color-primary)" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M22 2L11 13" stroke-linecap="round" stroke-linejoin="round"/>
-              <polygon points="22 2 15 22 11 13 2 9 22 2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+          <button class="send-btn" @click="handleSendMessage()" :disabled="isLoading || !newMessage.trim()">
+            <PaperAirplaneIcon class="h-7 w-7 text-primary" />
           </button>
         </div>
       </div>
@@ -41,6 +45,11 @@
 
 <script setup lang="ts">
 import BaseLayout from '@/components/BaseLayout/BaseLayout.vue'
+import ImageMessage from '@/components/Messages/ImageMessage.vue'
+import VideoMessage from '@/components/Messages/VideoMessage.vue'
+import DocumentMessage from '@/components/Messages/DocumentMessage.vue'
+import ButtonMessage from '@/components/Messages/ButtonMessage.vue' // Import the new component
+import { ArrowLeftIcon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import './Conversation.scss'
 
 import { ref, onMounted } from 'vue'
@@ -58,12 +67,28 @@ const client = ref<Client | null>(null)
 const newMessage = ref('')
 const isLoading = ref(false)
 
-const sendMessage = async () => {
-  if (newMessage.value.trim() && !isLoading.value) {
+const handleSendMessage = async (textToSend: string = newMessage.value) => {
+  if (textToSend.trim() && !isLoading.value) {
     isLoading.value = true
     try {
-      const message = await sendMessageToAPI(clientId, newMessage.value)
-      messages.value.push(message)
+      await sendMessageToAPI(clientId, textToSend)
+      // For now, manually add the new message to the list
+      // In a real app, this would come from a websocket or a refetch
+      messages.value.push({
+        _id: Date.now().toString(),
+        type: 'Message',
+        client: clientId,
+        message: {
+          _id: Date.now().toString(),
+          type: 'text',
+          text: textToSend,
+          typeUser: 'User',
+          user: clientId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        createdAt: new Date().toISOString(),
+      })
       newMessage.value = ''
     } catch (error) {
       console.error('Error sending message:', error)
@@ -86,13 +111,32 @@ const loadConversation = async () => {
   }
 }
 
+
+
 const isMyMessage = (message: Message): boolean => {
   // Message is 'mine' if its message.user field matches the clientId in the URL
   return message.message.user === clientId
 }
 
-const getMessageText = (message: Message): string => {
-  return message.message.text || '[Mensaje no soportado]'
+const getMessageContent = (message: Message) => {
+  if (message.message.type === 'text') {
+    const textContent = message.message.text || '';
+    // Check for the button message pattern
+    if (textContent.includes('|[')) {
+      return { component: ButtonMessage, props: { messageText: textContent } };
+    } else {
+      return textContent;
+    }
+  } else if (message.message.type === 'image') {
+    return { component: ImageMessage, props: { src: message.message.multimedia?.file } };
+  } else if (message.message.type === 'video') {
+    return { component: VideoMessage, props: { src: message.message.multimedia?.file } };
+  } else if (message.message.type === 'document') {
+    const fileName = message.message.multimedia?.filename || (message.message.multimedia?.file ? message.message.multimedia.file.split('/').pop() : 'Document');
+    return { component: DocumentMessage, props: { href: message.message.multimedia?.file, filename: fileName } };
+  }
+  console.log('Unsupported message type:', JSON.stringify(message));
+  return '[Mensaje no soportado]';
 }
 
 onMounted(() => {
