@@ -2,7 +2,17 @@
   <div class="input-area">
     <input v-model="newMessage" @keypress.enter="handleSendMessage()" :disabled="isLoading"
       placeholder="Escribe un mensaje..." />
-    <button class="send-btn" @click="handleSendMessage()" :disabled="isLoading || !newMessage.trim()">
+    <div v-if="attachedFiles.length > 0" class="file-previews">
+      <div v-for="(file, index) in attachedFiles" :key="index" class="file-preview-item">
+        <span>{{ file.name }}</span>
+        <button @click="removeAttachedFile(index)" class="remove-file-btn">x</button>
+      </div>
+    </div>
+    <input type="file" ref="fileInput" style="display: none" @change="handleFileChange" multiple />
+    <button class="attach-btn" @click="triggerFileInput">
+      <PaperClipIcon class="h-7 w-7 text-gray-500" />
+    </button>
+    <button class="send-btn" @click="handleSendMessage()" :disabled="isLoading || (!newMessage.trim() && attachedFiles.length === 0)">
       <PaperAirplaneIcon class="h-7 w-7 text-primary" />
     </button>
   </div>
@@ -10,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { PaperAirplaneIcon } from '@heroicons/vue/24/outline'
+import { PaperAirplaneIcon, PaperClipIcon } from '@heroicons/vue/24/outline'
 import { useConversationsStore } from '@/stores/conversations'
 import { useRoute } from 'vue-router'
 import type { Message } from '@/services/types'
@@ -30,9 +40,27 @@ const props = defineProps({
 const emit = defineEmits(['message-sent'])
 
 const newMessage = ref('')
+const fileInput = ref<HTMLInputElement | null>(null)
+const attachedFiles = ref<File[]>([])
+
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const removeAttachedFile = (index: number) => {
+  attachedFiles.value.splice(index, 1)
+}
+
+const handleFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files) {
+    attachedFiles.value = Array.from(target.files)
+    handleSendMessage()
+  }
+}
 
 const handleSendMessage = async () => {
-  if (newMessage.value.trim()) {
+  if (newMessage.value.trim() || attachedFiles.value.length > 0) {
     const message: Message = {
       _id: Date.now().toString(),
       type: 'Message',
@@ -48,7 +76,35 @@ const handleSendMessage = async () => {
       },
       createdAt: new Date().toISOString(),
     }
-    addMessageToConversation(clientId, message)
+
+    if (attachedFiles.value.length > 0) {
+      attachedFiles.value.forEach(file => {
+        const fileMessage: Message = {
+          _id: Date.now().toString() + '_file',
+          type: 'Message',
+          client: clientId,
+          message: {
+            _id: Date.now().toString() + '_file_content',
+            type: file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'document',
+            multimedia: {
+              file: URL.createObjectURL(file),
+              filename: file.name,
+              mimetype: file.type,
+              size: file.size.toString(),
+            },
+            typeUser: 'User',
+            user: 'current_user',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          createdAt: new Date().toISOString(),
+        }
+        addMessageToConversation(clientId, fileMessage)
+      })
+      attachedFiles.value = [] // Clear attached files after sending
+    } else {
+      addMessageToConversation(clientId, message)
+    }
     emit('message-sent')
     newMessage.value = ''
   }
@@ -95,6 +151,54 @@ const handleSendMessage = async () => {
 
     &:hover:not(:disabled) {
       filter: brightness(0.9);
+    }
+  }
+
+  .attach-btn {
+    background-color: transparent;
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+
+    &:hover {
+      background-color: #f0f0f0;
+      border-radius: 50%;
+    }
+  }
+
+  .file-previews {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 0 10px;
+  }
+
+  .file-preview-item {
+    display: flex;
+    align-items: center;
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+
+    span {
+      margin-right: 5px;
+    }
+
+    .remove-file-btn {
+      background: none;
+      border: none;
+      color: #777;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 5px;
     }
   }
 }
