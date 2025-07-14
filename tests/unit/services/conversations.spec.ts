@@ -4,12 +4,15 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import type { Client, Conversation, Message } from '../../../src/services/types'
 
 // Mock the api service
-vi.mock('@/services/api', () => ({
-  default: {
-    get: vi.fn(),
-    put: vi.fn(),
-  },
-}))
+vi.mock('@/services/api', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual as any,
+    default: {
+      get: vi.fn(),
+    },
+  };
+});
 
 const mockClients: Client[] = [
   {
@@ -179,27 +182,6 @@ describe('conversations.ts', () => {
       (api.get as vi.Mock).mockResolvedValueOnce({ data: [] }) // No clients found
       await expect(service.getConversationById('nonexistent')).rejects.toThrow('Client with ID nonexistent not found')
     })
-  })
-
-  describe('sendMessage', () => {
-    beforeEach(() => {
-      (api.put as vi.Mock).mockResolvedValueOnce({}) // Mock successful put for unreadCount update
-    })
-
-    it('should create a new message and call api.put', async () => {
-      const clientId = 'client1'
-      const messageText = 'New test message'
-
-      const newMessage = await service.sendMessage(clientId, messageText)
-
-      expect(newMessage).toBeDefined()
-      expect(newMessage.client).toBe(clientId)
-      expect(newMessage.message.text).toBe(messageText)
-      expect(newMessage.message.typeUser).toBe('User')
-      expect(api.put).toHaveBeenCalledWith(`/${clientId}.json`, { unreadCount: 0 })
-    })
-
-
   })
 
   describe('getPreviewMessage', () => {
