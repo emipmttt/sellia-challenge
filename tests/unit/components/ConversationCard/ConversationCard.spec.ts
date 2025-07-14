@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi } from 'vitest'
-import ConversationCard from '../../../../src/components/ConversationCard/conversationCard.vue'
+import ConversationCard from '../../../../src/components/ConversationCard/ConversationCard.vue'
 import type { Conversation, Message, Client } from '../../../../src/services/types'
 
 // Mock date-fns to control time for testing formatDistanceToNow
