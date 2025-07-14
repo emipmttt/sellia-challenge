@@ -8,6 +8,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vite.dev/config/
 export default mergeConfig(
   defineConfig({
+    base: '/sellia-challenge/', // This is important for GitHub Pages deployment
     plugins: [
       vue(),
       vueDevTools(),

@@ -1,20 +1,10 @@
-# sellia-messaging-app
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+# Sellia Challenge
 
 ## Project Setup
+
+Follow these steps to get the project up and running locally:
+
+### Install Dependencies
 
 ```sh
 npm install
@@ -32,14 +22,39 @@ npm run dev
 npm run build
 ```
 
+### Architectural Decisions
+
+*   **Vue 3 Composition API**: Utilized for better code organization, reusability, and reactivity management.
+*   **Vite**: Chosen as the build tool for its fast cold start times and instant hot module replacement.
+*   **TypeScript**: Adopted for type safety, improved maintainability, and better developer experience.
+
+### Design Patterns
+
+*   **Service Pattern**: Services (e.g., `auth.ts`, `clients.ts`, `conversations.ts`) are used to encapsulate business logic and data fetching, promoting separation of concerns.
+*   **Component-Based Architecture**: The UI is broken down into reusable components, following Vue's recommended practices.
+
+### Libraries Used
+
+*   **Vue Router**: For client-side routing.
+*   **Pinia**: As the state management library, offering a simpler and more intuitive API compared to Vuex.
+*   **date-fns**: For date manipulation and formatting.
+*   **Heroicons**: For SVG icons.
+*   **Vitest**: For unit testing.
+*   **Sass**: For CSS pre-processing.
+
+### Project Structure
+
+*   `src/components`: Reusable UI components.
+*   `src/services`: Business logic and API interactions.
+*   `src/views`: Top-level components representing different pages/views.
+*   `src/router`: Vue Router configuration.
+*   `src/stores`: Pinia stores for state management.
+*   `src/styles`: Global SCSS styles.
+*   `tests`: Unit tests for components and services.
+
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh
 npm run test:unit
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
