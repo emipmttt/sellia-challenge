@@ -2,7 +2,10 @@
   <BaseLayout>
     <template #default>
       <div class="home-container">
-        <div class="conversations-list">
+        <div v-if="isLoading" class="loading-indicator">
+          Cargando conversaciones...
+        </div>
+        <div v-else class="conversations-list">
           <ConversationCard v-for="conversation in conversations" :key="conversation.clientId"
             :conversation="conversation" :client="clientMap[conversation.clientId]"
             :is-active="isActive(conversation)"

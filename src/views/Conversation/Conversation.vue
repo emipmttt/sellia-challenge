@@ -9,7 +9,10 @@
         <span class="client-name">{{ client?.name || 'Cargando...' }}</span>
       </div>
     </template>
-    <div class="conversation-container">
+    <div v-if="isLoading" class="loading-indicator">
+      Cargando conversación...
+    </div>
+    <div v-else class="conversation-container">
       <div class="chat-area">
         <div class="messages" ref="messagesContainer">
           <div v-for="message in messages" :key="message._id" :class="['message', { 'right': !isMyMessage(message) }]">
