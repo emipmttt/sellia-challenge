@@ -23,6 +23,11 @@
               </template>
             </div>
           </div>
+          <div v-if="isTyping" class="message">
+            <div class="message-content is-mine">
+              Escribiendo...
+            </div>
+          </div>
         </div>
         <MessageInput :isLoading="isLoading" @message-sent="handleMessageSent" />
       </div>
@@ -66,6 +71,7 @@ const scrollToBottom = () => {
   }
 };
 const client = ref<Client | null>(null)
+const isTyping = ref(false)
 
 const loadConversation = async () => {
   try {
@@ -83,9 +89,52 @@ const loadConversation = async () => {
 }
 
 const handleMessageSent = () => {
+  const randomMessages = [
+    'Necesito ayuda con mi cuenta, por favor.',
+    'Tengo un problema con mi último pedido.',
+    '¿Podrían indicarme cómo restablecer mi contraseña?',
+    'Quisiera saber el estado de mi envío.',
+    'No puedo acceder a la aplicación.',
+    '¿Cómo puedo cambiar mi dirección de facturación?',
+    'Tengo una consulta sobre un producto específico.',
+    'Mi pago no se procesó correctamente.',
+    'Necesito soporte técnico urgente.',
+    '¿Pueden ayudarme a encontrar información sobre un servicio?',
+    '¿Cuál es el horario de atención al cliente?',
+    'Quiero reportar un error en la aplicación móvil.',
+    '¿Cómo puedo actualizar mis datos personales?',
+    'Tengo dudas sobre la política de devoluciones.',
+    '¿Es posible cancelar mi suscripción actual?',
+    'No encuentro la opción para contactar a un agente.',
+    'Mi factura no coincide con el servicio contratado.',
+    '¿Puedo cambiar la fecha de entrega de mi paquete?',
+    'Necesito información sobre las nuevas características.',
+    '¿Hay algún tutorial disponible para usar esta función?'
+  ];
+  const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+  isTyping.value = true;
   setTimeout(() => {
     scrollToBottom()
   }, 100);
+  setTimeout(() => {
+    const simulatedMessage: Message = {
+      _id: Date.now().toString() + '-simulated',
+      type: 'Message',
+      client: clientId,
+      message: {
+        _id: Date.now().toString() + '-simulated-msg',
+        type: 'text',
+        text: randomMessage,
+        typeUser: 'Client',
+        user: clientId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      createdAt: new Date().toISOString(),
+    };
+    addMessageToConversation(clientId, simulatedMessage);
+    isTyping.value = false;
+  }, 2000);
 }
 
 const isMyMessage = (message: Message): boolean => {
@@ -123,6 +172,6 @@ onMounted(() => {
   loadConversation();
   setTimeout(() => {
     scrollToBottom();
-  }, 100);
+  }, 300);
 });
 </script>

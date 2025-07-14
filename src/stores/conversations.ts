@@ -68,6 +68,7 @@ export const useConversationsStore = defineStore('conversations', () => {
     const conversation = conversations.value.find((conv: any) => conv.clientId === conversationId);
     if (conversation) {
       conversation.messages.push(message);
+      conversation.lastMessage = message;
     }
   }
 
