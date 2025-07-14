@@ -19,6 +19,20 @@
   --color-input-bg-error: #fff6f6;
   --color-input-text: #222;
   --color-error: #e53935;
+  --base-font-size: 16px; /* Default base font size */
+}
+
+html {
+  font-size: var(--base-font-size); /* Apply base font size to root */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* Manual dark mode toggle - higher priority */
@@ -42,6 +56,7 @@ html.dark {
   --color-input-bg-error: #2b1b1b;
   --color-input-text: #ddd;
   --color-error: #ff6b6b;
+  --base-font-size: 16px; /* Default base font size for dark mode */
 }
 
 /* Manual light mode toggle - override system preference */

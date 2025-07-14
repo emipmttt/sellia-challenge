@@ -114,7 +114,7 @@ const handleSendMessage = async () => {
 <style scoped lang="scss">
 .input-area {
   display: flex;
-  padding: 10px;
+  padding: 0.625rem;
   border-top: 1px solid #eee;
   background-color: var(--color-bg);
   border-top: 1px solid var(--color-border);
@@ -122,9 +122,9 @@ const handleSendMessage = async () => {
   input {
     flex-grow: 1;
     border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 8px 15px;
-    margin-right: 10px;
+    border-radius: 1.25rem;
+    padding: 0.5rem 0.9375rem;
+    margin-right: 0.625rem;
     outline: none;
     background-color: var(--color-input-bg);
     color: var(--color-input-text);
@@ -139,8 +139,8 @@ const handleSendMessage = async () => {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,14 +160,14 @@ const handleSendMessage = async () => {
   .attach-btn {
     background-color: transparent;
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-right: 5px;
+    margin-right: 0.3125rem;
 
     &:hover {
       background-color: var(--color-card-hover);
@@ -182,21 +182,21 @@ const handleSendMessage = async () => {
   .file-previews {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 5px;
-    padding: 0 10px;
+    gap: 0.3125rem;
+    margin-top: 0.3125rem;
+    padding: 0 0.625rem;
   }
 
   .file-preview-item {
     display: flex;
     align-items: center;
     background-color: #e0e0e0;
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 0.3125rem 0.625rem;
+    border-radius: 0.9375rem;
     font-size: 0.8em;
 
     span {
-      margin-right: 5px;
+      margin-right: 0.3125rem;
     }
 
     .remove-file-btn {
@@ -205,7 +205,7 @@ const handleSendMessage = async () => {
       color: #777; /* Default light mode color for remove button */
       cursor: pointer;
       font-weight: bold;
-      margin-left: 5px;
+      margin-left: 0.3125rem;
     }
 
     /* Applying variables for file-preview-item */

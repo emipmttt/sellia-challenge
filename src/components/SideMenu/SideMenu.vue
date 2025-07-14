@@ -12,6 +12,16 @@
       <button class="menu-action" @click="toggleDarkMode">
         {{ isDark ? 'Desactivar modo oscuro' : 'Activar modo oscuro' }}
       </button>
+
+      <div class="font-size-control">
+        <span>Tamaño de fuente:</span>
+        <div class="font-size-buttons">
+          <button @click="decrementFontSize">-</button>
+          <input type="number" v-model.number="currentFontSize" @change="handleFontSizeChange" :min="minFontSize" :max="maxFontSize" />
+          <button @click="incrementFontSize">+</button>
+        </div>
+      </div>
+
       <button class="menu-action signout" @click="signOut">
         Cerrar sesión
       </button>
@@ -26,8 +36,12 @@ const props = defineProps<{ modelValue: boolean }>()
 const emit = defineEmits(['update:modelValue', 'signout'])
 
 const isDark = ref(false)
+const currentFontSize = ref(16) // Default font size in pixels
+const minFontSize = 12
+const maxFontSize = 24
+const fontSizeStep = 1
 
-// Initialize theme on component mount
+// Initialize theme and font size on component mount
 onMounted(() => {
   const savedTheme = localStorage.getItem('theme')
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -39,7 +53,40 @@ onMounted(() => {
     document.documentElement.classList.remove('dark')
     isDark.value = false
   }
+
+  const savedFontSize = localStorage.getItem('fontSize')
+  if (savedFontSize) {
+    currentFontSize.value = parseInt(savedFontSize)
+    document.documentElement.style.setProperty('--base-font-size', `${currentFontSize.value}px`)
+  } else {
+    document.documentElement.style.setProperty('--base-font-size', `${currentFontSize.value}px`)
+  }
 })
+
+function handleFontSizeChange() {
+  // Ensure font size stays within bounds
+  if (currentFontSize.value < minFontSize) {
+    currentFontSize.value = minFontSize
+  } else if (currentFontSize.value > maxFontSize) {
+    currentFontSize.value = maxFontSize
+  }
+  localStorage.setItem('fontSize', currentFontSize.value.toString())
+  document.documentElement.style.setProperty('--base-font-size', `${currentFontSize.value}px`)
+}
+
+function incrementFontSize() {
+  if (currentFontSize.value < maxFontSize) {
+    currentFontSize.value += fontSizeStep
+    handleFontSizeChange()
+  }
+}
+
+function decrementFontSize() {
+  if (currentFontSize.value > minFontSize) {
+    currentFontSize.value -= fontSizeStep
+    handleFontSizeChange()
+  }
+}
 
 function toggleDarkMode() {
   const html = document.documentElement
@@ -64,11 +111,11 @@ function signOut() {
   position: fixed;
   top: 0;
   right: 0;
-  width: 280px;
+  width: 17.5rem;
   height: 100vh;
   background: var(--color-header);
   color: var(--color-text);
-  box-shadow: -2px 0 12px rgba(0,0,0,0.08);
+  box-shadow: -0.125rem 0 0.75rem rgba(0,0,0,0.08);
   z-index: 1001;
   transform: translateX(100%);
   transition: transform 0.25s cubic-bezier(.4,0,.2,1), background-color 0.3s, color 0.3s;
@@ -82,14 +129,14 @@ function signOut() {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  height: 64px;
+  height: 4rem;
   padding: 0 1rem;
   border-bottom: 1px solid var(--color-border);
 }
 .close-btn {
   background: none;
   border: none;
-  padding: 0.5rem;
+  padding: 0.3125rem;
   cursor: pointer;
   color: var(--color-text);
   display: flex;
@@ -101,17 +148,72 @@ function signOut() {
   }
 }
 .side-menu-content {
-  padding: 2rem 1.5rem;
+  padding: 1.25rem 0.9375rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.9375rem;
 }
+
+.font-size-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  span {
+    font-weight: bold;
+    color: var(--color-text);
+  }
+
+  .font-size-buttons {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      background: var(--color-bg);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: 0.5rem;
+      padding: 0.3125rem 0.625rem;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
+      font-size: 1rem; /* Base font size for buttons */
+
+      &:hover {
+        background: var(--color-border);
+      }
+    }
+
+    input[type="number"] {
+      width: 3.75rem; /* Adjust width as needed */
+      text-align: center;
+      background: var(--color-bg);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: 0.5rem;
+      padding: 0.3125rem 0.15625rem;
+      -moz-appearance: textfield; /* Hide Firefox Firefox number input arrows */
+      -webkit-appearance: none; /* Hide Chrome, Safari, Edge, Opera number input arrows */
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+      }
+    }
+  }
+}
+
 .menu-action {
   background: var(--color-bg);
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  padding: 0.75rem 1rem;
+  padding: 0.46875rem 0.625rem;
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.3s, color 0.3s, border-color 0.3s;
